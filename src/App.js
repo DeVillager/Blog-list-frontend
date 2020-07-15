@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 
@@ -40,42 +41,60 @@ const App = () => {
     }
   }
 
-  if (user === null) {
-    return (
+
+  const loginForm = () => (
+    <form onSubmit={handleLogin}>
       <div>
-        <h2>Log in to application</h2>
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-                <input
-              type="text"
-              value={username}
-              name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            password
-                <input
-              type="password"
-              value={password}
-              name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit">login</button>
-        </form>
+        username
+          <input
+          type="text"
+          value={username}
+          name="Username"
+          onChange={({ target }) => setUsername(target.value)}
+        />
       </div>
-    )
-  }
+      <div>
+        password
+          <input
+          type="password"
+          value={password}
+          name="Password"
+          onChange={({ target }) => setPassword(target.value)}
+        />
+      </div>
+      <button type="submit">login</button>
+    </form>
+  )
+
+  const noteForm = () => (
+    <></>
+    // <form onSubmit={addNote}>
+    //   <input
+    //     value={newNote}
+    //     onChange={handleNoteChange}
+    //   />
+    //   <button type="submit">save</button>
+    // </form>  
+  )
+
+
   return (
     <div>
       <h2>Blogs</h2>
-      <p>{errorMessage}</p>
-      {/* <Notification message={errorMessage} /> */}
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
-      )}
+      <Notification message={errorMessage} />
+      {user === null ?
+        loginForm() :
+        <div>
+          <p>{user.username} logged-in</p>
+          {/* {noteForm()} */}
+          <h2>Blogs</h2>
+          {/* <p>{errorMessage}</p> */}
+          {blogs.map(blog =>
+            <Blog key={blog.id} blog={blog} />
+          )}
+        </div>
+      }
+
     </div>
   )
 }
