@@ -4,6 +4,7 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import ErrorMessage from './components/ErrorMessage'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -14,23 +15,14 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  // const [blog, setBlog] = useState(null)
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
-
-
-  // useEffect(() => {
-  //   blogs = blogService
-  //   .getAll()
-  //   .then(setBlogs(blogs))
-  // }, [])
+  const [createBlogVisible, setCreateBlogVisible] = useState(false)
 
   useEffect(() => {
-    async function getBlogs() {
-      const fetchedBlogs = await blogService.getAll()
-      setBlogs(fetchedBlogs)
-    }
     getBlogs()
   }, [])
 
@@ -38,6 +30,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
+      console.log(`userid in app`, user.username)
       setUser(user)
       blogService.setToken(user.token)
     }
@@ -46,6 +39,15 @@ const App = () => {
     //   blogService.setToken(null)
     // }
   }, [])
+
+  const getBlogs = async () => {
+    const fetchedBlogs = await blogService.getAll()
+    fetchedBlogs.sort((a, b) => {
+      return b.likes - a.likes;
+    })
+    setBlogs(fetchedBlogs)
+    return fetchedBlogs
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -73,29 +75,33 @@ const App = () => {
     blogService.setToken(null)
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
+  const loginForm = () => {
+    return (
       <div>
-        username
+        <form onSubmit={handleLogin}>
+          <div>
+            username
           <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
+              type="text"
+              value={username}
+              name="Username"
+              onChange={({ target }) => setUsername(target.value)}
+            />
+          </div>
+          <div>
+            password
           <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
+              type="password"
+              value={password}
+              name="Password"
+              onChange={({ target }) => setPassword(target.value)}
+            />
+          </div>
+          <button type="submit">login</button>
+        </form>
       </div>
-      <button type="submit">login</button>
-    </form>
-  )
+    )
+  }
 
   const addBlog = async (event) => {
     event.preventDefault()
@@ -110,6 +116,7 @@ const App = () => {
       setTitle('')
       setAuthor('')
       setUrl('')
+      setCreateBlogVisible(false)
       setNotificationMessage('Blog added')
       setTimeout(() => { setNotificationMessage(null) }, 5000)
     }
@@ -120,31 +127,64 @@ const App = () => {
     }
   }
 
-  const handleTitleChange = (event) => {
-    setTitle(event.target.value)
-  }
-  const handleAuthorChange = (event) => {
-    setAuthor(event.target.value)
-  }
-  const handleUrlChange = (event) => {
-    setUrl(event.target.value)
+  const deleteBlog = async (blog) => {
+    // event.preventDefault()
+    if (window.confirm(`Remove ${blog.title} by ${blog.author}?`)) {
+      const id = blog.id
+      await blogService.remove(id)
+      setBlogs(blogs.filter(item => item.id !== id))
+    }
   }
 
-  const blogForm = () => (
-    // <></>
-    <div>
-      <h2>create new</h2>
-      <form onSubmit={addBlog}>
-        <label>title:</label>
-        <input value={title} onChange={handleTitleChange} /><br />
-        <label>author:</label>
-        <input value={author} onChange={handleAuthorChange} /><br />
-        <label>url:</label>
-        <input value={url} onChange={handleUrlChange} /><br />
-        <button type="submit" onClick={addBlog}>create</button>
-      </form>
-    </div>
-  )
+  const addLike = async (blog) => {
+    // event.preventDefault()
+    const updatedBlog = {
+      user: blog.user.id,
+      likes: ++blog.likes,
+      author: blog.author,
+      title: blog.title,
+      url: blog.url
+    }
+    const savedBlog = await blogService.update(blog.id, updatedBlog)
+    getBlogs()
+    // const allBlogs = await blogService.getAll()
+    // setBlogs(allBlogs)
+    return (savedBlog)
+  }
+
+  // const handleTitleChange = (event) => {
+  //   setTitle(event.target.value)
+  // }
+  // const handleAuthorChange = (event) => {
+  //   setAuthor(event.target.value)
+  // }
+  // const handleUrlChange = (event) => {
+  //   setUrl(event.target.value)
+  // }
+
+  const blogForm = () => {
+    const hideWhenVisible = { display: createBlogVisible ? 'none' : '' }
+    const showWhenVisible = { display: createBlogVisible ? '' : 'none' }
+    return (
+      <div>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setCreateBlogVisible(true)}>new blog</button>
+        </div>
+        <div style={showWhenVisible}>
+          <BlogForm
+            title={title}
+            author={author}
+            url={url}
+            handleTitleChange={({ target }) => setTitle(target.value)}
+            handleAuthorChange={({ target }) => setAuthor(target.value)}
+            handleUrlChange={({ target }) => setUrl(target.value)}
+            handleSubmit={addBlog}
+          />
+          <button onClick={() => setCreateBlogVisible(false)}>cancel</button>
+        </div>
+      </div>
+    )
+  }
 
 
   return (
@@ -152,7 +192,6 @@ const App = () => {
       <h2>Blogs</h2>
       <ErrorMessage message={errorMessage} />
       <Notification message={notificationMessage} />
-      {/* <ErrorMessage message={errorMessage} /> */}
       {user === null ?
         loginForm() :
         <div>
@@ -161,7 +200,12 @@ const App = () => {
           {blogForm()}
           <h2>Blogs</h2>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog
+              key={blog.id}
+              blog={blog}
+              deleteBlog={() => deleteBlog(blog)}
+              addLike={() => addLike(blog)}
+            />
           )}
         </div>
       }
