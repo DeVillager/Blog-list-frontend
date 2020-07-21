@@ -30,7 +30,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
-      console.log(`userid in app`, user.username)
+      console.log('userid in app', user.username)
       setUser(user)
       blogService.setToken(user.token)
     }
@@ -43,7 +43,7 @@ const App = () => {
   const getBlogs = async () => {
     const fetchedBlogs = await blogService.getAll()
     fetchedBlogs.sort((a, b) => {
-      return b.likes - a.likes;
+      return b.likes - a.likes
     })
     setBlogs(fetchedBlogs)
     return fetchedBlogs
@@ -81,7 +81,7 @@ const App = () => {
         <form onSubmit={handleLogin}>
           <div>
             username
-          <input
+            <input
               type="text"
               value={username}
               name="Username"
@@ -90,7 +90,7 @@ const App = () => {
           </div>
           <div>
             password
-          <input
+            <input
               type="password"
               value={password}
               name="Password"

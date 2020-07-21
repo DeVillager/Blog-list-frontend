@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import blogService from '../services/blogs'
 
 const Blog = ({ blog, deleteBlog, addLike }) => {
   const blogStyle = {
@@ -48,5 +47,7 @@ const Blog = ({ blog, deleteBlog, addLike }) => {
     </div>
   )
 }
+
+Blog.displayName = 'Blog'
 
 export default Blog
