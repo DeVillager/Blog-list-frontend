@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-const Blog = ({ blog, deleteBlog, addLike }) => {
+const Blog = ({ blog, deleteBlog, addLike, }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 10,
@@ -25,14 +25,20 @@ const Blog = ({ blog, deleteBlog, addLike }) => {
     }
   }, [])
 
+  const show = () => {
+    // event.preventDefault()
+    setInfoVisible(true)
+    // if(showContent) showContent()
+  }
 
   return (
-    <div style={blogStyle}>
-      <div style={hideWhenVisible}>
+    <div className='blog' style={blogStyle}>
+      <div style={hideWhenVisible} className="initialView">
         <p>{blog.title} {blog.author}</p>
-        <button onClick={() => setInfoVisible(true)}>view</button>
+        {/* <button onClick={() => setInfoVisible(true)}>view</button> */}
+        <button onClick={() => show()}>view</button>
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className="togglableContent">
         <ul >
           <li>{blog.title}</li>
           <li>{blog.url}</li>

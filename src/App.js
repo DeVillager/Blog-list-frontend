@@ -21,6 +21,7 @@ const App = () => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
   const [createBlogVisible, setCreateBlogVisible] = useState(false)
+  // const [infoVisible, setInfoVisible] = useState(false)
 
   useEffect(() => {
     getBlogs()
@@ -119,6 +120,7 @@ const App = () => {
       setCreateBlogVisible(false)
       setNotificationMessage('Blog added')
       setTimeout(() => { setNotificationMessage(null) }, 5000)
+      return savedBlog
     }
     catch (exception) {
       // console.log(exception.message)
@@ -126,6 +128,12 @@ const App = () => {
       setTimeout(() => { setErrorMessage(null) }, 5000)
     }
   }
+
+  // const addBlog = async (blogObject) => {
+  //   const savedBlog = await blogService.create(blogObject)
+  //   setBlogs(blogs.concat(savedBlog))
+  //   return savedBlog
+  // }
 
   const deleteBlog = async (blog) => {
     // event.preventDefault()
@@ -152,6 +160,7 @@ const App = () => {
     return (savedBlog)
   }
 
+
   // const handleTitleChange = (event) => {
   //   setTitle(event.target.value)
   // }
@@ -172,6 +181,7 @@ const App = () => {
         </div>
         <div style={showWhenVisible}>
           <BlogForm
+            // createBlog={addBlog}
             title={title}
             author={author}
             url={url}
@@ -185,7 +195,6 @@ const App = () => {
       </div>
     )
   }
-
 
   return (
     <div>
