@@ -5,7 +5,7 @@ import BlogForm from './BlogForm'
 import userEvent from '@testing-library/user-event'
 
 
-test.only('<BlogForm /> updates parent state and calls onSubmit', () => {
+test('<BlogForm /> updates parent state and calls onSubmit', () => {
 
   // const [title, setTitle] = useState('')
   // const [author, setAuthor] = useState('')

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, {useState, useEffect} from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import blogService from './services/blogs'
@@ -53,19 +53,23 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
-      const user = await loginService.login({ username, password, })
+      const user = await loginService.login({username, password,})
       window.localStorage.setItem(
-        'loggedBlogUser', JSON.stringify(user)
+          'loggedBlogUser', JSON.stringify(user)
       )
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
       setNotificationMessage('Login successful')
-      setTimeout(() => { setNotificationMessage(null) }, 5000)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
     } catch (exception) {
       setErrorMessage('Wrong username or password')
-      setTimeout(() => { setErrorMessage(null) }, 5000)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 
@@ -78,29 +82,31 @@ const App = () => {
 
   const loginForm = () => {
     return (
-      <div>
-        <form onSubmit={handleLogin}>
-          <div>
-            username
-            <input
-              type="text"
-              value={username}
-              name="Username"
-              onChange={({ target }) => setUsername(target.value)}
-            />
-          </div>
-          <div>
-            password
-            <input
-              type="password"
-              value={password}
-              name="Password"
-              onChange={({ target }) => setPassword(target.value)}
-            />
-          </div>
-          <button type="submit">login</button>
-        </form>
-      </div>
+        <div>
+          <form onSubmit={handleLogin}>
+            <div>
+              username
+              <input
+                  id='username'
+                  type="text"
+                  value={username}
+                  name="Username"
+                  onChange={({target}) => setUsername(target.value)}
+              />
+            </div>
+            <div>
+              password
+              <input
+                  id='password'
+                  type="password"
+                  value={password}
+                  name="Password"
+                  onChange={({target}) => setPassword(target.value)}
+              />
+            </div>
+            <button id="login-button" type="submit">login</button>
+          </form>
+        </div>
     )
   }
 
@@ -119,13 +125,16 @@ const App = () => {
       setUrl('')
       setCreateBlogVisible(false)
       setNotificationMessage('Blog added')
-      setTimeout(() => { setNotificationMessage(null) }, 5000)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
       return savedBlog
-    }
-    catch (exception) {
+    } catch (exception) {
       // console.log(exception.message)
       setErrorMessage('Adding new blog failed')
-      setTimeout(() => { setErrorMessage(null) }, 5000)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
   }
 
@@ -172,54 +181,54 @@ const App = () => {
   // }
 
   const blogForm = () => {
-    const hideWhenVisible = { display: createBlogVisible ? 'none' : '' }
-    const showWhenVisible = { display: createBlogVisible ? '' : 'none' }
+    const hideWhenVisible = {display: createBlogVisible ? 'none' : ''}
+    const showWhenVisible = {display: createBlogVisible ? '' : 'none'}
     return (
-      <div>
-        <div style={hideWhenVisible}>
-          <button onClick={() => setCreateBlogVisible(true)}>new blog</button>
+        <div>
+          <div style={hideWhenVisible}>
+            <button onClick={() => setCreateBlogVisible(true)}>new blog</button>
+          </div>
+          <div style={showWhenVisible}>
+            <BlogForm
+                // createBlog={addBlog}
+                title={title}
+                author={author}
+                url={url}
+                handleTitleChange={({target}) => setTitle(target.value)}
+                handleAuthorChange={({target}) => setAuthor(target.value)}
+                handleUrlChange={({target}) => setUrl(target.value)}
+                handleSubmit={addBlog}
+            />
+            <button onClick={() => setCreateBlogVisible(false)}>cancel</button>
+          </div>
         </div>
-        <div style={showWhenVisible}>
-          <BlogForm
-            // createBlog={addBlog}
-            title={title}
-            author={author}
-            url={url}
-            handleTitleChange={({ target }) => setTitle(target.value)}
-            handleAuthorChange={({ target }) => setAuthor(target.value)}
-            handleUrlChange={({ target }) => setUrl(target.value)}
-            handleSubmit={addBlog}
-          />
-          <button onClick={() => setCreateBlogVisible(false)}>cancel</button>
-        </div>
-      </div>
     )
   }
 
   return (
-    <div>
-      <h2>Blogs</h2>
-      <ErrorMessage message={errorMessage} />
-      <Notification message={notificationMessage} />
-      {user === null ?
-        loginForm() :
-        <div>
-          <p>{user.name} logged-in</p>
-          <button onClick={logout}>logout</button>
-          {blogForm()}
-          <h2>Blogs</h2>
-          {blogs.map(blog =>
-            <Blog
-              key={blog.id}
-              blog={blog}
-              deleteBlog={() => deleteBlog(blog)}
-              addLike={() => addLike(blog)}
-            />
-          )}
-        </div>
-      }
+      <div>
+        <h2>Blogs</h2>
+        <ErrorMessage message={errorMessage}/>
+        <Notification message={notificationMessage}/>
+        {user === null ?
+            loginForm() :
+            <div>
+              <p>{user.name} logged-in</p>
+              <button onClick={logout}>logout</button>
+              {blogForm()}
+              <h2 id='bloglist'>Blogs</h2>
+              {blogs.map(blog =>
+                  <Blog
+                      key={blog.id}
+                      blog={blog}
+                      deleteBlog={() => deleteBlog(blog)}
+                      addLike={() => addLike(blog)}
+                  />
+              )}
+            </div>
+        }
 
-    </div>
+      </div>
   )
 }
 

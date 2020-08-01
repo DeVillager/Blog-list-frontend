@@ -36,14 +36,14 @@ const Blog = ({ blog, deleteBlog, addLike, }) => {
       <div style={hideWhenVisible} className="initialView">
         <p>{blog.title} {blog.author}</p>
         {/* <button onClick={() => setInfoVisible(true)}>view</button> */}
-        <button onClick={() => show()}>view</button>
+        <button id='showButton' onClick={() => show()}>view</button>
       </div>
       <div style={showWhenVisible} className="togglableContent">
         <ul >
           <li>{blog.title}</li>
           <li>{blog.url}</li>
           <li>likes {blog.likes}
-            <button onClick={() => addLike(blog)}>like</button>
+            <button id='likeButton' onClick={() => addLike(blog)}>like</button>
           </li>
           <li>{blog.author}</li>
         </ul>
