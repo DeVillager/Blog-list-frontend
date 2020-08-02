@@ -3,9 +3,6 @@ Cypress.Commands.add("login", ({username, password}) => {
     username, password
   }).then(({body}) => {
     window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(body))
-    // Cypress.Cookies.preserveOnce('loggedBlogAppUser', JSON.stringify(body))
-    // cy.request('GET', 'http://localhost:3000')
-    // console.log("moikku")
     cy.visit('http://localhost:3000')
   })
 })
@@ -20,9 +17,11 @@ Cypress.Commands.add('createBlog', ({title, author, url}) => {
     headers: {
       'Authorization': `bearer ${JSON.parse(localStorage.getItem('loggedBlogAppUser')).token}`
     }
+  }).then(({body}) => {
+    cy.visit('http://localhost:3000')
   })
-  cy.visit('http://localhost:3000')
 })
+
 
 // Cypress.Commands.add('loginMocked', (type = 'admin') => {
 //   window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(auths[type])); // this works each time

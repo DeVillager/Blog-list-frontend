@@ -1,14 +1,23 @@
 ﻿describe('Blog app', function () {
 
   beforeEach(function () {
-    // cy.visit('http://localhost:3000')
+    // reset database
     cy.request('POST', 'http://localhost:3001/api/testing/reset')
+    // create two users
     const user = {
       name: 'hellocypress',
       username: 'cypress',
       password: 'cypress2'
     }
     cy.request('POST', 'http://localhost:3001/api/users/', user)
+
+    const user2 = {
+      name: 'other',
+      username: 'other',
+      password: 'other2'
+    }
+    cy.request('POST', 'http://localhost:3001/api/users/', user2)
+    
     cy.visit('http://localhost:3000')
   })
 
@@ -36,36 +45,23 @@
     })
   })
 
-  describe.only('When logged in', function () {
-    
-    beforeEach(function () {
-      // cy.loginMocked();
+  describe('When logged in', function () {
 
+    beforeEach(function () {
       // log in user here
       cy.get('#username').type('cypress')
       cy.get('#password').type('cypress2')
       cy.contains('login').click()
       cy.contains('hellocypress logged-in')
-      // cy.contains('Blog added')
       cy.login({username: 'cypress', password: 'cypress2'})
     })
 
     it('A blog can be created', function () {
-      // ...
       cy.createBlog({title: 'newTitle', author: 'newAuthor', url: 'newUrl'})
-      // cy.get('#bloglist').contains('newTitle newAuthor')
       cy.contains('newTitle newAuthor')
-      // cy.contains('newTitle newAuthor').parent()
-          // .should('contain', 'Blogs')
-      // cy.get('#title').type('new title')
-      // cy.get('#author').type('new author')
-      // cy.get('#url').type('new url')
-      // cy.get('#create').click()
-      // cy.contains('Blog added')
     })
 
     it('User can like a blog', function () {
-      // ...
       cy.createBlog({title: 'newTitle', author: 'newAuthor', url: 'newUrl'})
       cy.contains('view').click()
       cy.contains('like').click()
@@ -73,26 +69,55 @@
     })
 
     it('User can remove a blog', function () {
-      // ...
       cy.createBlog({title: 'newTitle', author: 'newAuthor', url: 'newUrl'})
       cy.contains('view').click()
-      cy.get('html').should('contain', 'newTitle')
+      cy.contains('newTitle')
       cy.contains('remove').click()
       cy.get('html').should('not.contain', 'newTitle')
+    })
+
+    it('Other users can not remove a blog', function () {
+      // hellocypress makes new blog and logs out
+      cy.createBlog({title: 'newTitle', author: 'newAuthor', url: 'newUrl'})
+      cy.contains('logout').click()
+
+      // other user logs in
+      cy.get('#username').type('other')
+      cy.get('#password').type('other2')
+      cy.contains('login').click()
+      cy.login({username: 'other', password: 'other2'})
+      cy.contains('other logged-in')
+
+      // Blog is visible but delete button not
+      cy.contains('view').click()
+      cy.get('html').should('contain', 'newTitle')
+      cy.get('#deleteButton').should('not.be.visible')
     })
 
     it('Blogs are ordered by likes', function () {
-      // ...
+      // Create three blogs and open them with view button
       cy.createBlog({title: 'newTitle', author: 'newAuthor', url: 'newUrl'})
       cy.createBlog({title: 'newTitle2', author: 'newAuthor2', url: 'newUrl2'})
       cy.createBlog({title: 'newTitle3', author: 'newAuthor3', url: 'newUrl3'})
-      cy.contains('view').click()
-      cy.contains('like').click().click()
-      //TODO loppuun
-      cy.get('html').should('contain', 'newTitle')
-      cy.contains('remove').click()
-      cy.get('html').should('not.contain', 'newTitle')
+      cy.get('[id="showButton"]')
+          .each(($button, index, $list) => {
+            cy.wrap($button).click()
+          })
+      // Give first blog no likes, second blog one like and last blog 2 likes
+      cy.get('[id="likeButton"]')
+          .then(buttons => {
+            cy.wrap(buttons[2]).click().click()
+            cy.wrap(buttons[1]).click()
+          })
+      cy.visit('http://localhost:3000')
+      // Blogs should be ordered by likes and have likes amount 2, 1, 0
+      cy.get('[id="likes"]')
+          .then(likes => {
+            cy.wrap(likes[0]).should('contain', 'likes 2')
+            cy.wrap(likes[1]).should('contain', 'likes 1')
+            cy.wrap(likes[2]).should('contain', 'likes 0')
+          })
     })
   })
-
 })
+

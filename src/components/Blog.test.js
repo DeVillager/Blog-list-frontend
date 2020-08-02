@@ -15,14 +15,14 @@ beforeEach(() => {
   cleanup()
 })
 
-test('renders title and author', () => {
+test('renders title and author (5.13)', () => {
   component = render(<Blog blog={createdBlog} />)
-  component.debug()
+  // component.debug()
   expect(component.container).toHaveTextContent('testTitle')
   expect(component.container).toHaveTextContent('testAuthor')
 })
 
-test('not likes or url in view by default', () => {
+test('not likes or url in view by default (5.13)', () => {
   component = render(<Blog blog={createdBlog} />)
   const initialView = component.container.querySelector('.initialView')
   // console.log(prettyDOM(initialView))
@@ -36,23 +36,23 @@ test('at start the children are not displayed', () => {
   expect(div).toHaveStyle('display: none')
 })
 
-test('clicking the view shows url and likes', () => {
+test('clicking the view shows url and likes (5.14)', () => {
   component = render(<Blog blog={createdBlog} />)
   const button = component.getByText('view')
   fireEvent.click(button)
-  component.debug()
+  // component.debug()
   const div = component.container.querySelector('.togglableContent')
   expect(div).not.toHaveStyle('display: none')
   expect(div).toHaveTextContent('testUrl')
   expect(div).toHaveTextContent('likes')
 })
 
-test('clicking the like button triggers event handler twice', () => {
+test('clicking the like button triggers event handler twice (5.15)', () => {
   const mockHandler = jest.fn()
   const component = render(<Blog blog={createdBlog} addLike={mockHandler} />)
   const button = component.getByText('like')
   fireEvent.click(button)
   fireEvent.click(button)
-  component.debug()
+  // component.debug()
   expect(mockHandler.mock.calls).toHaveLength(2)
 })

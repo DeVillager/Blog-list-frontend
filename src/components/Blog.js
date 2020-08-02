@@ -42,13 +42,13 @@ const Blog = ({ blog, deleteBlog, addLike, }) => {
         <ul >
           <li>{blog.title}</li>
           <li>{blog.url}</li>
-          <li>likes {blog.likes}
+          <li id='likes'>likes {blog.likes}
             <button id='likeButton' onClick={() => addLike(blog)}>like</button>
           </li>
           <li>{blog.author}</li>
         </ul>
         <button onClick={() => setInfoVisible(false)}>hide</button>
-        <button style={showIfLoggedUser} onClick={() => deleteBlog(blog)}>remove</button>
+        <button id='deleteButton' style={showIfLoggedUser} onClick={() => deleteBlog(blog)}>remove</button>
       </div>
     </div>
   )
